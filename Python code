@@ -1,0 +1,85 @@
+import datetime
+import csv
+from collections import defaultdict
+
+# Class to handle expense tracking functionality
+class ExpenseTracker:
+    def _init_(self):
+        self.expenses = []  # List to store all expenses
+
+    def add_expense(self, amount, category, description):
+        """
+        Adds an expense to the tracker.
+        :param amount: Expense amount (float).
+        :param category: Expense category (string).
+        :param description: Description of the expense (string).
+        """
+        expense = {
+            "amount": amount,
+            "category": category,
+            "description": description,
+            "date": datetime.datetime.now().strftime("%Y-%m-%d")
+        }
+        self.expenses.append(expense)
+        print(f"Expense added: {description} - ${amount} ({category})")
+
+    def view_expenses(self):
+        """Displays the list of all recorded expenses."""
+        if not self.expenses:
+            print("No expenses recorded.")
+            return
+        print("\nExpense History:")
+        for i, expense in enumerate(self.expenses, 1):
+            print(f"{i}. {expense['date']} - {expense['description']} - ${expense['amount']} ({expense['category']})")
+
+    def generate_summary(self):
+        """Generates a summary report of expenses by category."""
+        summary = defaultdict(float)
+        for expense in self.expenses:
+            summary[expense['category']] += expense['amount']
+        print("\nExpense Summary:")
+        for category, total in summary.items():
+            print(f"{category}: ${total:.2f}")
+
+    def export_to_csv(self, filename="expenses.csv"):
+        """Exports expenses to a CSV file."""
+        with open(filename, mode="w", newline="") as file:
+            writer = csv.DictWriter(file, fieldnames=["date", "amount", "category", "description"])
+            writer.writeheader()
+            writer.writerows(self.expenses)
+        print(f"Expenses exported to {filename}")
+
+# Example usage of the ExpenseTracker application
+def main():
+    """Main function to run the ExpenseTracker application."""
+    tracker = ExpenseTracker()
+    while True:
+        print("\nOptions:")
+        print("1. Add Expense")
+        print("2. View Expenses")
+        print("3. Generate Summary")
+        print("4. Export to CSV")
+        print("5. Exit")
+        choice = input("Choose an option: ")
+        if choice == "1":
+            try:
+                amount = float(input("Enter amount: "))
+                category = input("Enter category: ")
+                description = input("Enter description: ")
+                tracker.add_expense(amount, category, description)
+            except ValueError:
+                print("Invalid input. Please enter a valid number for the amount.")
+        elif choice == "2":
+            tracker.view_expenses()
+        elif choice == "3":
+            tracker.generate_summary()
+        elif choice == "4":
+            tracker.export_to_csv()
+        elif choice == "5":
+            print("Exiting application.")
+            break
+        else:
+            print("Invalid choice. Please try again.")
+
+if _name_ == "_main_":
+    main()
