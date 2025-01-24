@@ -1,0 +1,50 @@
+# Ruby Version
+class ExpenseTracker
+  def initialize
+    @expenses = []
+  end
+
+  def add_expense(amount, category, description)
+    expense = {
+      amount: amount,
+      category: category,
+      description: description,
+      date: Time.now.strftime("%Y-%m-%d")
+    }
+    @expenses << expense
+    puts "Expense added: #{description} - $#{amount} (#{category})"
+  end
+
+  def view_expenses
+    if @expenses.empty?
+      puts "No expenses recorded."
+      return
+    end
+    puts "\nExpense History:"
+    @expenses.each_with_index do |expense, index|
+      puts "#{index + 1}. #{expense[:date]} - #{expense[:description]} - $#{expense[:amount]} (#{expense[:category]})"
+    end
+  end
+
+  def generate_summary
+    summary = Hash.new(0)
+    @expenses.each do |expense|
+      summary[expense[:category]] += expense[:amount]
+    end
+    puts "\nExpense Summary:"
+    summary.each do |category, total|
+      puts "#{category}: $#{total}"
+    end
+  end
+
+  def export_to_csv(filename = "expenses.csv")
+    require 'csv'
+    CSV.open(filename, "w") do |csv|
+      csv << %w[date amount category description]
+      @expenses.each do |expense|
+        csv << [expense[:date], expense[:amount], expense[:category], expense[:description]]
+      end
+    end
+    puts "Expenses exported to #{filename}"
+  end
+end
