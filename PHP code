@@ -1,0 +1,56 @@
+# PHP Version
+<?php
+class ExpenseTracker {
+    private $expenses;
+
+    public function __construct() {
+        $this->expenses = [];
+    }
+
+    public function addExpense($amount, $category, $description) {
+        $expense = [
+            'amount' => $amount,
+            'category' => $category,
+            'description' => $description,
+            'date' => date("Y-m-d")
+        ];
+        array_push($this->expenses, $expense);
+        echo "Expense added: $description - \${$amount} ($category)\n";
+    }
+
+    public function viewExpenses() {
+        if (empty($this->expenses)) {
+            echo "No expenses recorded.\n";
+            return;
+        }
+        echo "\nExpense History:\n";
+        foreach ($this->expenses as $index => $expense) {
+            echo ($index + 1) . ". " . $expense['date'] . " - " . $expense['description'] . " - $" . $expense['amount'] . " (" . $expense['category'] . ")\n";
+        }
+    }
+
+    public function generateSummary() {
+        $summary = [];
+        foreach ($this->expenses as $expense) {
+            if (!array_key_exists($expense['category'], $summary)) {
+                $summary[$expense['category']] = 0;
+            }
+            $summary[$expense['category']] += $expense['amount'];
+        }
+        echo "\nExpense Summary:\n";
+        foreach ($summary as $category => $total) {
+            echo "$category: \$$total\n";
+        }
+    }
+
+    public function exportToCsv($filename = "expenses.csv") {
+        $file = fopen($filename, "w");
+        fputcsv($file, ['date', 'amount', 'category', 'description']);
+        foreach ($this->expenses as $expense) {
+            fputcsv($file, $expense);
+        }
+        fclose($file);
+        echo "Expenses exported to $filename\n";
+    }
+}
+?>
